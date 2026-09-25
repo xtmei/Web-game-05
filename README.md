@@ -1,32 +1,25 @@
-# 夏日乡道 · Summer Road
+# 鹈鹕环岛记 · Pelican Island
 
-A small, quiet third-person cycling experience built with Three.js. Every visible scene object, surface texture, sky cloud, and sound is generated in the browser. It has no downloaded art or audio assets.
+一款可以直接在浏览器玩的 3D 海岛骑行小游戏。骑着阿啾的单车沿海岸前进，捡贝壳、避开螃蟹，最后抵达灯塔。场景、角色和声音均由浏览器实时生成，不需要下载图片或音频素材。
 
-## Run locally
+## 本地运行
 
-Serve this folder over HTTP (ES modules do not run reliably from `file://`):
+这是无需构建的静态站点。ES modules 需要通过 HTTP 加载：
 
 ```sh
 python3 -m http.server 8080
 ```
 
-Then open `http://localhost:8080`.
+在浏览器打开 `http://localhost:8080`。首次加载 Three.js 需要连接 jsDelivr。
 
-## Controls
+## 玩法
 
-- `W` / `↑`: pedal faster
-- `S` / `↓`: ease off and slow down
-- `A` / `←`, `D` / `→`: steer
-- Touch: use the on-screen left/right and pace controls
-- `M`: toggle synthesized ambience
-- Press `R` to recenter the ride
-
-The bike keeps a gentle cruising pace if no key is held. Web Audio starts after the first user gesture, as required by browser autoplay rules.
+- 沿着海岸收集 12 枚贝壳中的至少 7 枚，然后抵达终点灯塔。
+- 碰到螃蟹会失去一颗心；三颗心耗尽或抵达终点时贝壳不足，可以重新挑战。
+- `←` / `A`、`→` / `D`：转向；`↑` / `W`：加速；`↓` / `S`：刹车。
+- `空格`：暂停或继续；`M`：开关海风音效；结束后 `R`：重新开始。
+- 触屏设备提供方向、加速和刹车按钮，也可以点顶部暂停按钮。
 
 ## GitHub Pages
 
-This is a plain static site with no build step. The included workflow publishes the repository root on every push to `main`. For first-time setup, open **Settings → Pages** and select **GitHub Actions** as the source, then run the `Publish Summer Road to GitHub Pages` workflow. The Three.js runtime is imported as an ES module from jsDelivr; all project-specific geometry, textures, and sound are generated in code.
-
-## Performance notes
-
-The renderer caps its device pixel ratio at 1.2, uses low-cost cel materials, procedural geometry, fog for distance, and no shadow map or costly postprocessing pass. It is tuned for a 1920×1080 display and midrange desktop GPUs such as an RTX 4060; this workspace has no installed browser renderer, so no frame-rate measurement is claimed. Resolution scales down on tablets and phones.
+仓库自带 Pages 工作流，推送到 `main` 后发布根目录。首次使用时，在 **Settings → Pages** 选择 **GitHub Actions** 作为发布来源。Three.js 通过 jsDelivr import map 加载，其他内容不依赖构建服务。

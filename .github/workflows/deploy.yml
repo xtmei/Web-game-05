@@ -1,4 +1,4 @@
-name: Publish Summer Road to GitHub Pages
+name: Publish Pelican Island to GitHub Pages
 
 on:
   push:

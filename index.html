@@ -2,10 +2,10 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#f2aa73" />
-  <meta name="description" content="A quiet summer ride through the Japanese countryside." />
-  <title>夏日乡道 — Summer Road</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#087e91" />
+  <meta name="description" content="和鹈鹕阿啾一起骑过海岛，收集贝壳，抵达灯塔。" />
+  <title>鹈鹕环岛记 · Pelican Island</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="./src/style.css" />
   <script type="importmap">
@@ -13,57 +13,70 @@
   </script>
 </head>
 <body>
-  <main id="game" aria-label="夏日乡道骑行游戏">
+  <main id="game" aria-label="鹈鹕环岛记骑行游戏">
     <div id="canvas-host"></div>
-    <div class="film-grain" aria-hidden="true"></div>
-    <div class="vignette" aria-hidden="true"></div>
     <div class="sunwash" aria-hidden="true"></div>
 
-    <header class="top-mark" aria-hidden="true">
-      <span class="mark-dot"></span>
-      <span>夏の道</span>
-      <span class="mark-divider"></span>
-      <span class="mark-sub">COUNTRYSIDE · 17:42</span>
+    <header class="site-header">
+      <div class="brand"><span class="brand-icon">✳</span><span>PELICAN <b>ISLAND</b></span></div>
+      <span class="header-coordinate">北纬 18° · 晴朗的海风</span>
+      <button id="pause-button" class="icon-button" type="button" aria-label="暂停游戏" title="暂停游戏" hidden>Ⅱ</button>
+      <button id="sound-toggle" class="icon-button" type="button" aria-label="关闭声音" title="切换声音">♫ <span>声音开</span></button>
     </header>
 
-    <section class="intro" id="intro" aria-label="开始骑行">
-      <div class="intro-card">
-        <p class="intro-kicker">晚夏 · 日本乡间</p>
-        <h1>夏日乡道</h1>
-        <p class="intro-subtitle">一段安静的骑行</p>
-        <button id="start-button" type="button">
-          <span class="play-mark">▶</span>
-          <span>开始骑行</span>
-          <span class="start-en">BEGIN RIDE</span>
-        </button>
-        <p class="intro-hint">WASD / 方向键 · 也可触屏操作</p>
+    <section class="intro overlay" id="intro" aria-label="开始游戏">
+      <div class="intro-panel">
+        <div class="eyebrow"><span class="eyebrow-line"></span> 一场阳光下的小冒险 <span class="eyebrow-line"></span></div>
+        <div class="pelican-stamp" aria-hidden="true">☀ <span>↝</span> ✳</div>
+        <h1>鹈鹕<br><em>环岛记</em></h1>
+        <p class="intro-en">THE GREAT PELICAN RIDE</p>
+        <p class="intro-copy">跟着阿啾踩上单车，沿着海岸去灯塔。<br>捡起沿途的贝壳，避开横行的小螃蟹！</p>
+        <div class="mission"><span class="mission-icon">✦</span><span>收集至少 <strong>7 枚贝壳</strong>，平安抵达灯塔</span></div>
+        <button id="start-button" class="primary-button" type="button">出发，去看海 <span>↗</span></button>
+        <p class="controls-hint">← → 转向 &nbsp;·&nbsp; ↑ 加速 &nbsp;·&nbsp; ↓ 刹车 &nbsp;·&nbsp; 空格暂停</p>
       </div>
-      <div class="intro-bottom">BREATHE IN · LET THE AFTERNOON PASS</div>
+      <div class="intro-footer"><span>01 / 03</span><span>一条海岸路 · 一个好天气 · 无数小惊喜</span><span>✳ 2026</span></div>
     </section>
 
-    <div class="ride-hud" id="ride-hud" aria-hidden="true">
-      <div class="speed-card">
-        <div class="speed-label">CRUISING</div>
-        <div class="speed-value"><span id="speed-value">18</span><small>km/h</small></div>
-        <div class="speed-track"><i id="speed-track-fill"></i></div>
+    <section class="ride-hud" id="ride-hud" aria-label="游戏状态" hidden>
+      <div class="hud-left">
+        <div class="hud-label">今日的海岛任务 <span>ISLAND QUEST</span></div>
+        <div class="shell-counter"><span class="shell-icon" aria-hidden="true">◕</span><strong id="shell-count">0</strong><span class="shell-total">/ 12 贝壳</span></div>
+        <div class="heart-row" id="hearts" aria-label="剩余三颗爱心">♥ ♥ ♥</div>
       </div>
-      <div class="ride-time"><span class="time-dot"></span><span id="ride-time">00:00</span><span class="time-place">田園の道</span></div>
-      <button id="sound-toggle" class="sound-toggle" type="button" aria-label="切换环境声音" title="切换环境声音"><span class="sound-glyph">♫</span></button>
-    </div>
+      <div class="hud-right">
+        <div class="route-head"><span>起点</span><span>灯塔</span></div>
+        <div class="route-bar"><div id="route-fill"></div><span class="route-bike">✳</span></div>
+        <div class="hud-stats"><span>骑行 <b id="ride-time">00:00</b></span><span>速度 <b><span id="speed-value">18</span> km/h</b></span></div>
+      </div>
+    </section>
 
-    <div class="touch-controls" id="touch-controls" aria-label="触屏骑行控制">
-      <div class="steer-pad">
-        <button data-control="left" aria-label="向左转">‹</button>
-        <button data-control="right" aria-label="向右转">›</button>
+    <div class="touch-controls" id="touch-controls" aria-label="触屏骑行控制" hidden>
+      <div class="control-group">
+        <button data-control="left" aria-label="向左转">←</button>
+        <button data-control="right" aria-label="向右转">→</button>
       </div>
-      <div class="pace-pad">
-        <button data-control="brake" aria-label="减速">−</button>
+      <div class="control-group">
+        <button data-control="brake" aria-label="刹车">−</button>
         <button data-control="accelerate" aria-label="加速">＋</button>
       </div>
     </div>
 
-    <div class="edge-caption" aria-hidden="true"><span>風が吹いている</span><i></i><span>THE WIND IS SOFT</span></div>
-    <div id="notice" class="notice" role="status"></div>
+    <div class="ride-caption" id="ride-caption" hidden>海风作伴，向灯塔出发 <span>✳</span></div>
+    <div id="notice" class="notice" role="status" aria-live="polite"></div>
+
+    <section class="end-screen overlay" id="end-screen" aria-label="游戏结果" hidden>
+      <div class="end-panel">
+        <span class="end-sun">✳</span>
+        <p class="end-kicker" id="end-kicker">旅途完成</p>
+        <h2 id="end-title">抵达灯塔！</h2>
+        <p id="end-description">阿啾把今天的海风装进了回忆里。</p>
+        <div class="end-stats"><div><small>收集贝壳</small><strong id="final-shells">0 / 12</strong></div><div><small>骑行时间</small><strong id="final-time">00:00</strong></div></div>
+        <button id="restart-button" class="primary-button" type="button">再骑一圈 <span>↗</span></button>
+      </div>
+    </section>
+
+    <div class="pause-screen" id="pause-screen" hidden><div><span>☀</span><h2>歇歇脚，吹吹海风</h2><p>按空格继续骑行</p><button id="resume-button" class="primary-button" type="button">继续出发 <span>↗</span></button></div></div>
   </main>
   <script type="module" src="./src/main.js"></script>
 </body>
