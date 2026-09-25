@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#f2aa73" />
-  <meta name="description" content="A quiet summer ride through the Japanese countryside." />
-  <title>夏日乡道 — Summer Road</title>
+  <meta name="theme-color" content="#1f5e8c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="description" content="戴草帽的鹈鹕骑着单车环游意大利滨海小岛：穿过彩色小镇、沙滩、古石桥、柠檬园和灯塔海角。" />
+  <title>鹈鹕环岛 · Pellicano in Riviera</title>
+  <link rel="icon" href="data:," />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="./src/style.css" />
   <script type="importmap">
@@ -13,57 +15,89 @@
   </script>
 </head>
 <body>
-  <main id="game" aria-label="夏日乡道骑行游戏">
+  <main id="game" aria-label="鹈鹕环岛骑行游戏">
     <div id="canvas-host"></div>
-    <div class="film-grain" aria-hidden="true"></div>
-    <div class="vignette" aria-hidden="true"></div>
-    <div class="sunwash" aria-hidden="true"></div>
 
-    <header class="top-mark" aria-hidden="true">
-      <span class="mark-dot"></span>
-      <span>夏の道</span>
-      <span class="mark-divider"></span>
-      <span class="mark-sub">COUNTRYSIDE · 17:42</span>
-    </header>
+    <div id="loading" class="loading"><div class="loading-sun"></div><p>正在粉刷小镇的房子…</p></div>
 
-    <section class="intro" id="intro" aria-label="开始骑行">
+    <div class="top-bar">
+      <button id="pause-button" class="round-button" type="button" aria-label="暂停" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.5"/><rect x="14" y="5" width="4" height="14" rx="1.5"/></svg>
+      </button>
+      <button id="sound-toggle" class="round-button" type="button" aria-label="声音" aria-pressed="true">
+        <svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg class="mute" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9l5 6M21 9l-5 6" fill="none" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <section id="intro" class="intro" hidden>
       <div class="intro-card">
-        <p class="intro-kicker">晚夏 · 日本乡间</p>
-        <h1>夏日乡道</h1>
-        <p class="intro-subtitle">一段安静的骑行</p>
-        <button id="start-button" type="button">
-          <span class="play-mark">▶</span>
-          <span>开始骑行</span>
-          <span class="start-en">BEGIN RIDE</span>
-        </button>
-        <p class="intro-hint">WASD / 方向键 · 也可触屏操作</p>
+        <div class="tiles" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <p class="kicker">ISOLA DEI PELLICANI · 鹈鹕岛</p>
+        <h1>鹈鹕环岛<small>Pellicano in Riviera</small></h1>
+        <p class="lede">戴上草帽，骑上薄荷绿单车！从钟楼广场出发，穿过彩色小镇、金沙滩、古石桥、柠檬园和灯塔海角，绕岛一圈回到广场。</p>
+        <ul class="rules">
+          <li><i class="ico lemon"></i><span><b>收柠檬</b>每个 −1 秒，并补充冲刺能量</span></li>
+          <li><i class="ico flag"></i><span><b>过彩旗</b>按顺序通过 5 个检查点</span></li>
+          <li><i class="ico crate"></i><span><b>躲障碍</b>木箱、花盆和摩托，每撞 +3 秒</span></li>
+        </ul>
+        <div class="how">
+          <div class="how-touch"><b>手机</b>自动踩踏 · 左手 ◀ ▶ 转向 · 右手刹车 / 冲刺</div>
+          <div class="how-keys"><b>键盘</b>← → 转向 · ↑ 蹬快 · ↓ 刹车 · 空格冲刺 · P 暂停</div>
+        </div>
+        <button id="start-button" class="cta" type="button">Andiamo! 出发</button>
+        <p id="intro-best" class="best"></p>
       </div>
-      <div class="intro-bottom">BREATHE IN · LET THE AFTERNOON PASS</div>
     </section>
 
-    <div class="ride-hud" id="ride-hud" aria-hidden="true">
-      <div class="speed-card">
-        <div class="speed-label">CRUISING</div>
-        <div class="speed-value"><span id="speed-value">18</span><small>km/h</small></div>
-        <div class="speed-track"><i id="speed-track-fill"></i></div>
+    <section id="hud" class="hud" hidden aria-live="polite">
+      <div class="hud-card hud-main">
+        <div class="hud-time"><small>用时</small><strong id="hud-time">00:00.0</strong></div>
+        <div class="hud-lemons"><i class="ico lemon"></i><strong id="hud-lemons">0</strong><small>/<span id="hud-lemon-total">0</span></small></div>
       </div>
-      <div class="ride-time"><span class="time-dot"></span><span id="ride-time">00:00</span><span class="time-place">田園の道</span></div>
-      <button id="sound-toggle" class="sound-toggle" type="button" aria-label="切换环境声音" title="切换环境声音"><span class="sound-glyph">♫</span></button>
+      <div class="hud-card hud-stage">
+        <small>检查点 <b id="hud-stage">1/5</b></small>
+        <span id="hud-stage-name">金沙滩</span>
+      </div>
+      <div class="map-wrap"><canvas id="minimap" aria-label="小地图"></canvas></div>
+      <div id="next-arrow" class="next-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l7 18-7-4-7 4z"/></svg><b>0 m</b></div>
+      <div class="speedo"><strong id="hud-speed">0</strong><small>km/h</small></div>
+      <div id="energy" class="energy"><div id="energy-fill"></div><small>冲刺能量</small></div>
+    </section>
+
+    <div id="wrong-way" class="wrong-way" hidden>方向反了！掉头 ↺</div>
+    <div id="toast" class="toast"></div>
+    <div id="countdown" class="countdown" hidden>3</div>
+
+    <div id="touch-controls" class="touch-controls" hidden>
+      <div class="pad pad-left">
+        <button data-control="left" class="tbtn steer" type="button" aria-label="向左转"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4L7 12l8 8"/></svg></button>
+        <button data-control="right" class="tbtn steer" type="button" aria-label="向右转"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8"/></svg></button>
+      </div>
+      <div class="pad pad-right">
+        <button data-control="brake" class="tbtn brake" type="button" aria-label="刹车"><span>刹车</span></button>
+        <button id="boost-button" data-control="boost" class="tbtn boost" type="button" aria-label="冲刺"><span>冲刺</span></button>
+      </div>
     </div>
 
-    <div class="touch-controls" id="touch-controls" aria-label="触屏骑行控制">
-      <div class="steer-pad">
-        <button data-control="left" aria-label="向左转">‹</button>
-        <button data-control="right" aria-label="向右转">›</button>
+    <section id="pause-screen" class="sheet" hidden>
+      <div class="sheet-card">
+        <h2>休息一下</h2>
+        <p>在广场喝杯柠檬汽水 🍋</p>
+        <button id="resume-button" class="cta" type="button">继续骑行</button>
+        <button id="restart-pause" class="ghost" type="button">重新开始</button>
       </div>
-      <div class="pace-pad">
-        <button data-control="brake" aria-label="减速">−</button>
-        <button data-control="accelerate" aria-label="加速">＋</button>
-      </div>
-    </div>
+    </section>
 
-    <div class="edge-caption" aria-hidden="true"><span>風が吹いている</span><i></i><span>THE WIND IS SOFT</span></div>
-    <div id="notice" class="notice" role="status"></div>
+    <section id="result" class="sheet" hidden>
+      <div class="sheet-card result-card">
+        <div id="result-medal" class="medal"><span>金柠檬</span></div>
+        <h2 id="result-title">Bravo！</h2>
+        <dl id="result-stats" class="stats"></dl>
+        <p id="result-best" class="best"></p>
+        <button id="again-button" class="cta" type="button">再骑一圈</button>
+      </div>
+    </section>
   </main>
   <script type="module" src="./src/main.js"></script>
 </body>

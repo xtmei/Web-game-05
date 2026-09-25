@@ -1,32 +1,46 @@
-# 夏日乡道 · Summer Road
+# 鹈鹕环岛 · Pellicano in Riviera
 
-A small, quiet third-person cycling experience built with Three.js. Every visible scene object, surface texture, sky cloud, and sound is generated in the browser. It has no downloaded art or audio assets.
+一款可以直接在浏览器里玩的 3D 骑行小游戏，手机和电脑都能玩。戴草帽的鹈鹕骑着薄荷绿单车，环游一座意大利滨海小岛：从钟楼广场出发，经过彩色小镇和港口、金沙滩、古石桥、柠檬园和灯塔海角，最后回到广场。
 
-## Run locally
+地形、建筑、植被、海面、角色和音乐都在浏览器里实时生成，不需要任何图片或音频素材。
 
-Serve this folder over HTTP (ES modules do not run reliably from `file://`):
+## 玩法
+
+- 按顺序通过 5 个彩旗检查点，完成一整圈。
+- 每收集一个柠檬减 1 秒，并补充冲刺能量；踩到蓝色加速带可以短暂提速。
+- 撞到柠檬箱、花盆或迎面开来的 Vespa，每次加 3 秒并减速。
+- 按最终成绩获得金、银、铜柠檬奖牌；最佳成绩保存在本地。
+
+## 操作
+
+| | 手机 / 平板 | 键盘 |
+|---|---|---|
+| 转向 | 左下角 ◀ ▶ | `←` `→` / `A` `D` |
+| 蹬快 | 自动踩踏 | `↑` / `W` |
+| 刹车 | 右下角「刹车」 | `↓` / `S` |
+| 冲刺 | 右下角「冲刺」 | `空格` / `Shift` |
+| 暂停 | 右上角 ⏸ | `P` / `Esc` |
+
+横屏和竖屏都支持，触控按钮已避开刘海和底部手势区域。
+
+## 本地运行
+
+这是无需构建的静态站点，ES modules 需要通过 HTTP 加载：
 
 ```sh
 python3 -m http.server 8080
 ```
 
-Then open `http://localhost:8080`.
+然后打开 `http://localhost:8080`。Three.js 通过 jsDelivr 加载，首次打开需要联网。
 
-## Controls
+## 代码结构
 
-- `W` / `↑`: pedal faster
-- `S` / `↓`: ease off and slow down
-- `A` / `←`, `D` / `→`: steer
-- Touch: use the on-screen left/right and pace controls
-- `M`: toggle synthesized ambience
-- Press `R` to recenter the ride
-
-The bike keeps a gentle cruising pace if no key is held. Web Audio starts after the first user gesture, as required by browser autoplay rules.
+- `src/island.js`：岛屿海岸线、环岛路线和地形高度场
+- `src/world.js`：天空、海水、小镇、港口、海滩、石桥、柠檬园、灯塔等场景
+- `src/pelican.js`：鹈鹕骑手和 Vespa 模型
+- `src/audio.js`：程序化音乐和音效
+- `src/main.js`：骑行物理、检查点、收集、障碍、HUD、小地图和触屏操作
 
 ## GitHub Pages
 
-This is a plain static site with no build step. The included workflow publishes the repository root on every push to `main`. For first-time setup, open **Settings → Pages** and select **GitHub Actions** as the source, then run the `Publish Summer Road to GitHub Pages` workflow. The Three.js runtime is imported as an ES module from jsDelivr; all project-specific geometry, textures, and sound are generated in code.
-
-## Performance notes
-
-The renderer caps its device pixel ratio at 1.2, uses low-cost cel materials, procedural geometry, fog for distance, and no shadow map or costly postprocessing pass. It is tuned for a 1920×1080 display and midrange desktop GPUs such as an RTX 4060; this workspace has no installed browser renderer, so no frame-rate measurement is claimed. Resolution scales down on tablets and phones.
+仓库自带 Pages 工作流，推送到 `main` 后发布根目录。首次使用时，在 **Settings → Pages** 里把发布来源设为 **GitHub Actions**。
