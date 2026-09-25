@@ -2,10 +2,12 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#087e91" />
-  <meta name="description" content="和鹈鹕阿啾一起骑过海岛，收集贝壳，抵达灯塔。" />
-  <title>鹈鹕环岛记 · Pelican Island</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#1f5e8c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="description" content="戴草帽的鹈鹕骑着单车环游意大利滨海小岛：穿过彩色小镇、沙滩、古石桥、柠檬园和灯塔海角。" />
+  <title>鹈鹕环岛 · Pellicano in Riviera</title>
+  <link rel="icon" href="data:," />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="./src/style.css" />
   <script type="importmap">
@@ -13,70 +15,89 @@
   </script>
 </head>
 <body>
-  <main id="game" aria-label="鹈鹕环岛记骑行游戏">
+  <main id="game" aria-label="鹈鹕环岛骑行游戏">
     <div id="canvas-host"></div>
-    <div class="sunwash" aria-hidden="true"></div>
 
-    <header class="site-header">
-      <div class="brand"><span class="brand-icon">✳</span><span>PELICAN <b>ISLAND</b></span></div>
-      <span class="header-coordinate">北纬 18° · 晴朗的海风</span>
-      <button id="pause-button" class="icon-button" type="button" aria-label="暂停游戏" title="暂停游戏" hidden>Ⅱ</button>
-      <button id="sound-toggle" class="icon-button" type="button" aria-label="关闭声音" title="切换声音">♫ <span>声音开</span></button>
-    </header>
+    <div id="loading" class="loading"><div class="loading-sun"></div><p>正在粉刷小镇的房子…</p></div>
 
-    <section class="intro overlay" id="intro" aria-label="开始游戏">
-      <div class="intro-panel">
-        <div class="eyebrow"><span class="eyebrow-line"></span> 一场阳光下的小冒险 <span class="eyebrow-line"></span></div>
-        <div class="pelican-stamp" aria-hidden="true">☀ <span>↝</span> ✳</div>
-        <h1>鹈鹕<br><em>环岛记</em></h1>
-        <p class="intro-en">THE GREAT PELICAN RIDE</p>
-        <p class="intro-copy">跟着阿啾踩上单车，沿着海岸去灯塔。<br>捡起沿途的贝壳，避开横行的小螃蟹！</p>
-        <div class="mission"><span class="mission-icon">✦</span><span>收集至少 <strong>7 枚贝壳</strong>，平安抵达灯塔</span></div>
-        <button id="start-button" class="primary-button" type="button">出发，去看海 <span>↗</span></button>
-        <p class="controls-hint">← → 转向 &nbsp;·&nbsp; ↑ 加速 &nbsp;·&nbsp; ↓ 刹车 &nbsp;·&nbsp; 空格暂停</p>
-      </div>
-      <div class="intro-footer"><span>01 / 03</span><span>一条海岸路 · 一个好天气 · 无数小惊喜</span><span>✳ 2026</span></div>
-    </section>
+    <div class="top-bar">
+      <button id="pause-button" class="round-button" type="button" aria-label="暂停" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.5"/><rect x="14" y="5" width="4" height="14" rx="1.5"/></svg>
+      </button>
+      <button id="sound-toggle" class="round-button" type="button" aria-label="声音" aria-pressed="true">
+        <svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg class="mute" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9l5 6M21 9l-5 6" fill="none" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
 
-    <section class="ride-hud" id="ride-hud" aria-label="游戏状态" hidden>
-      <div class="hud-left">
-        <div class="hud-label">今日的海岛任务 <span>ISLAND QUEST</span></div>
-        <div class="shell-counter"><span class="shell-icon" aria-hidden="true">◕</span><strong id="shell-count">0</strong><span class="shell-total">/ 12 贝壳</span></div>
-        <div class="heart-row" id="hearts" aria-label="剩余三颗爱心">♥ ♥ ♥</div>
-      </div>
-      <div class="hud-right">
-        <div class="route-head"><span>起点</span><span>灯塔</span></div>
-        <div class="route-bar"><div id="route-fill"></div><span class="route-bike">✳</span></div>
-        <div class="hud-stats"><span>骑行 <b id="ride-time">00:00</b></span><span>速度 <b><span id="speed-value">18</span> km/h</b></span></div>
+    <section id="intro" class="intro" hidden>
+      <div class="intro-card">
+        <div class="tiles" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <p class="kicker">ISOLA DEI PELLICANI · 鹈鹕岛</p>
+        <h1>鹈鹕环岛<small>Pellicano in Riviera</small></h1>
+        <p class="lede">戴上草帽，骑上薄荷绿单车！从钟楼广场出发，穿过彩色小镇、金沙滩、古石桥、柠檬园和灯塔海角，绕岛一圈回到广场。</p>
+        <ul class="rules">
+          <li><i class="ico lemon"></i><span><b>收柠檬</b>每个 −1 秒，并补充冲刺能量</span></li>
+          <li><i class="ico flag"></i><span><b>过彩旗</b>按顺序通过 5 个检查点</span></li>
+          <li><i class="ico crate"></i><span><b>躲障碍</b>木箱、花盆和摩托，每撞 +3 秒</span></li>
+        </ul>
+        <div class="how">
+          <div class="how-touch"><b>手机</b>自动踩踏 · 左手 ◀ ▶ 转向 · 右手刹车 / 冲刺</div>
+          <div class="how-keys"><b>键盘</b>← → 转向 · ↑ 蹬快 · ↓ 刹车 · 空格冲刺 · P 暂停</div>
+        </div>
+        <button id="start-button" class="cta" type="button">Andiamo! 出发</button>
+        <p id="intro-best" class="best"></p>
       </div>
     </section>
 
-    <div class="touch-controls" id="touch-controls" aria-label="触屏骑行控制" hidden>
-      <div class="control-group">
-        <button data-control="left" aria-label="向左转">←</button>
-        <button data-control="right" aria-label="向右转">→</button>
+    <section id="hud" class="hud" hidden aria-live="polite">
+      <div class="hud-card hud-main">
+        <div class="hud-time"><small>用时</small><strong id="hud-time">00:00.0</strong></div>
+        <div class="hud-lemons"><i class="ico lemon"></i><strong id="hud-lemons">0</strong><small>/<span id="hud-lemon-total">0</span></small></div>
       </div>
-      <div class="control-group">
-        <button data-control="brake" aria-label="刹车">−</button>
-        <button data-control="accelerate" aria-label="加速">＋</button>
+      <div class="hud-card hud-stage">
+        <small>检查点 <b id="hud-stage">1/5</b></small>
+        <span id="hud-stage-name">金沙滩</span>
+      </div>
+      <div class="map-wrap"><canvas id="minimap" aria-label="小地图"></canvas></div>
+      <div id="next-arrow" class="next-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l7 18-7-4-7 4z"/></svg><b>0 m</b></div>
+      <div class="speedo"><strong id="hud-speed">0</strong><small>km/h</small></div>
+      <div id="energy" class="energy"><div id="energy-fill"></div><small>冲刺能量</small></div>
+    </section>
+
+    <div id="wrong-way" class="wrong-way" hidden>方向反了！掉头 ↺</div>
+    <div id="toast" class="toast"></div>
+    <div id="countdown" class="countdown" hidden>3</div>
+
+    <div id="touch-controls" class="touch-controls" hidden>
+      <div class="pad pad-left">
+        <button data-control="left" class="tbtn steer" type="button" aria-label="向左转"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4L7 12l8 8"/></svg></button>
+        <button data-control="right" class="tbtn steer" type="button" aria-label="向右转"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8"/></svg></button>
+      </div>
+      <div class="pad pad-right">
+        <button data-control="brake" class="tbtn brake" type="button" aria-label="刹车"><span>刹车</span></button>
+        <button id="boost-button" data-control="boost" class="tbtn boost" type="button" aria-label="冲刺"><span>冲刺</span></button>
       </div>
     </div>
 
-    <div class="ride-caption" id="ride-caption" hidden>海风作伴，向灯塔出发 <span>✳</span></div>
-    <div id="notice" class="notice" role="status" aria-live="polite"></div>
-
-    <section class="end-screen overlay" id="end-screen" aria-label="游戏结果" hidden>
-      <div class="end-panel">
-        <span class="end-sun">✳</span>
-        <p class="end-kicker" id="end-kicker">旅途完成</p>
-        <h2 id="end-title">抵达灯塔！</h2>
-        <p id="end-description">阿啾把今天的海风装进了回忆里。</p>
-        <div class="end-stats"><div><small>收集贝壳</small><strong id="final-shells">0 / 12</strong></div><div><small>骑行时间</small><strong id="final-time">00:00</strong></div></div>
-        <button id="restart-button" class="primary-button" type="button">再骑一圈 <span>↗</span></button>
+    <section id="pause-screen" class="sheet" hidden>
+      <div class="sheet-card">
+        <h2>休息一下</h2>
+        <p>在广场喝杯柠檬汽水 🍋</p>
+        <button id="resume-button" class="cta" type="button">继续骑行</button>
+        <button id="restart-pause" class="ghost" type="button">重新开始</button>
       </div>
     </section>
 
-    <div class="pause-screen" id="pause-screen" hidden><div><span>☀</span><h2>歇歇脚，吹吹海风</h2><p>按空格继续骑行</p><button id="resume-button" class="primary-button" type="button">继续出发 <span>↗</span></button></div></div>
+    <section id="result" class="sheet" hidden>
+      <div class="sheet-card result-card">
+        <div id="result-medal" class="medal"><span>金柠檬</span></div>
+        <h2 id="result-title">Bravo！</h2>
+        <dl id="result-stats" class="stats"></dl>
+        <p id="result-best" class="best"></p>
+        <button id="again-button" class="cta" type="button">再骑一圈</button>
+      </div>
+    </section>
   </main>
   <script type="module" src="./src/main.js"></script>
 </body>
